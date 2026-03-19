@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pack Weight Calculator | TrailReady Gear</title>
+    <meta name="description" content="Calculate your hiking pack weight and get optimization tips. Free tool for backpackers.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-sm sticky top-0 z-50"><!-- same as index --></nav>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="text-center mb-12"><h1 class="text-4xl font-bold mb-4">Pack Weight Calculator</h1><p class="text-xl text-gray-600 max-w-2xl mx-auto">Enter your gear and see exactly what your pack weighs. Get personalized tips to lighten your load.</p></div>
+        <div class="grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold">Your Gear</h2><div><button onclick="saveList()" class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"><i class="fas fa-save mr-2"></i>Save</button><button onclick="loadList()" class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"><i class="fas fa-folder-open mr-2"></i>Load</button></div></div>
+                <div class="mb-6"><label class="block text-gray-700 font-semibold mb-2">Trip Type</label><select id="tripType" onchange="updateCalculator()" class="w-full border rounded-lg px-4 py-3"><option value="day">Day Hike</option><option value="overnight" selected>Overnight Backpacking</option><option value="multiday">3+ Day Trip</option></select></div>
+                <div class="space-y-6" id="gearCategories">
+                    <div class="border rounded-lg p-4"><div class="flex justify-between items-center"><div><h3 class="font-semibold">Backpack</h3><p class="text-sm text-gray-500">Osprey Atmos AG 65</p></div><div class="flex items-center gap-4"><input type="number" id="backpackWeight" value="4.2" step="0.1" class="w-20 border rounded px-2 py-1 text-right"><span class="text-gray-600 w-16">lbs</span><input type="checkbox" id="backpackWorn" class="w-5 h-5"></div></div></div>
+                    <div class="border rounded-lg p-4"><div class="flex justify-between items-center"><div><h3 class="font-semibold">Tent</h3><p class="text-sm text-gray-500">MSR Hubba Hubba 2P</p></div><div class="flex items-center gap-4"><input type="number" id="tentWeight" value="3.8" step="0.1" class="w-20 border rounded px-2 py-1 text-right"><span class="text-gray-600 w-16">lbs</span><input type="checkbox" id="tentShared" class="w-5 h-5"></div></div></div>
+                    <div class="border rounded-lg p-4"><div class="flex justify-between items-center"><div><h3 class="font-semibold">Sleeping Bag</h3><p class="text-sm text-gray-500">Western Mountaineering Versalite</p></div><div class="flex items-center gap-4"><input type="number" id="bagWeight" value="2.2" step="0.1" class="w-20 border rounded px-2 py-1 text-right"><span class="text-gray-600 w-16">lbs</span><input type="checkbox" id="bagWorn" class="w-5 h-5"></div></div></div>
+                    <div class="border rounded-lg p-4"><div class="flex justify-between items-center"><div><h3 class="font-semibold">Sleeping Pad</h3><p class="text-sm text-gray-500">Therm-a-Rest NeoAir XLite</p></div><div class="flex items-center gap-4"><input type="number" id="padWeight" value="1.0" step="0.1" class="w-20 border rounded px-2 py-1 text-right"><span class="text-gray-600 w-16">lbs</span><input type="checkbox" id="padWorn" class="w-5 h-5"></div></div></div>
+                    <div class="border rounded-lg p-4"><div class="flex justify-between items-center"><div><h3 class="font-semibold">Stove System</h3><p class="text-sm text-gray-500">MSR Pocket Rocket + pot</p></div><div class="flex items-center gap-4"><input type="number" id="stoveWeight" value="1.1" step="0.1" class="w-20 border rounded px-2 py-1 text-right"><span class="text-gray-600 w-16">lbs</span><input type="checkbox" id="stoveShared" class="w-5 h-5"></div></div></div>
+                    <div class="border rounded-lg p-4 bg-blue-50"><div class="flex justify-between items-center"><div><h3 class="font-semibold">Water (consumable)</h3><p class="text-sm text-gray-500">2L carry + filter</p></div><div class="flex items-center gap-4"><input type="number" id="waterWeight" value="4.4" step="0.1" class="w-20 border rounded px-2 py-1 text-right"><span class="text-gray-600 w-16">lbs</span><input type="checkbox" id="waterConsumable" checked class="w-5 h-5"></div></div></div>
+                    <div class="border rounded-lg p-4 bg-blue-50"><div class="flex justify-between items-center"><div><h3 class="font-semibold">Food (consumable)</h3><p class="text-sm text-gray-500">2 days, 3 meals/day</p></div><div class="flex items-center gap-4"><input type="number" id="foodWeight" value="3.0" step="0.1" class="w-20 border rounded px-2 py-1 text-right"><span class="text-gray-600 w-16">lbs</span><input type="checkbox" id="foodConsumable" checked class="w-5 h-5"></div></div></div>
+                    <div class="border rounded-lg p-4 bg-blue-50"><div class="flex justify-between items-center"><div><h3 class="font-semibold">Fuel (consumable)</h3><p class="text-sm text-gray-500">Small canister</p></div><div class="flex items-center gap-4"><input type="number" id="fuelWeight" value="0.5" step="0.1" class="w-20 border rounded px-2 py-1 text-right"><span class="text-gray-600 w-16">lbs</span><input type="checkbox" id="fuelConsumable" checked class="w-5 h-5"></div></div></div>
+                    <div class="border rounded-lg p-4"><div class="flex justify-between items-center"><div><h3 class="font-semibold">Clothing System</h3><p class="text-sm text-gray-500">Rain jacket, puffy, extra socks</p></div><div class="flex items-center gap-4"><input type="number" id="clothingWeight" value="2.5" step="0.1" class="w-20 border rounded px-2 py-1 text-right"><span class="text-gray-600 w-16">lbs</span><input type="checkbox" id="clothingWorn" class="w-5 h-5"></div></div></div>
+                    <div class="border rounded-lg p-4"><div class="flex justify-between items-center"><div><h3 class="font-semibold">First Aid</h3><p class="text-sm text-gray-500">Basic kit + emergency</p></div><div class="flex items-center gap-4"><input type="number" id="firstAidWeight" value="0.8" step="0.1" class="w-20 border rounded px-2 py-1 text-right"><span class="text-gray-600 w-16">lbs</span><input type="checkbox" id="firstAidShared" class="w-5 h-5"></div></div></div>
+                </div>
+                <div class="mt-6 pt-6 border-t"><button onclick="addCustomItem()" class="text-green-600 hover:text-green-700"><i class="fas fa-plus-circle mr-2"></i>Add Custom Item</button></div>
+            </div>
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
+                    <h2 class="text-2xl font-bold mb-6">Your Pack Weight</h2>
+                    <div class="text-center mb-6"><div class="text-5xl font-bold text-green-600" id="totalWeight">14.5</div><div class="text-gray-500">lbs total</div></div>
+                    <div class="space-y-4 mb-6">
+                        <div><div class="flex justify-between text-sm mb-1"><span>Base Weight (gear)</span><span id="baseWeight" class="font-semibold">9.3 lbs</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-blue-600 h-2 rounded-full" style="width: 64%"></div></div></div>
+                        <div><div class="flex justify-between text-sm mb-1"><span>Consumables</span><span id="consumableWeight" class="font-semibold">7.9 lbs</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-orange-500 h-2 rounded-full" style="width: 54%"></div></div></div>
+                        <div><div class="flex justify-between text-sm mb-1"><span>Worn Weight</span><span id="wornWeight" class="font-semibold">2.0 lbs</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-green-500 h-2 rounded-full" style="width: 14%"></div></div></div>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg mb-6" id="weightRating"><div class="font-semibold mb-2">Your Pack Rating:</div><div class="text-lg font-bold text-green-600">Lightweight</div><p class="text-sm text-gray-600 mt-1">Good for most trips. You could shave 1-2 lbs with a few swaps.</p></div>
+                    <div class="border-t pt-6"><h3 class="font-semibold mb-3">Lighten Your Load</h3><div class="space-y-3" id="optimizationTips"><div class="flex items-start gap-2 text-sm"><i class="fas fa-lightbulb text-yellow-500 mt-1"></i><div><span class="font-medium">Tent (3.8 lbs)</span> is heavy for solo. Consider the <a href="#" class="text-green-600 hover:underline">Zpacks Duplex</a> (1.2 lbs).</div></div></div></div>
+                    <div class="mt-6 pt-6 border-t"><h3 class="font-semibold mb-3">Get Your Packing Checklist</h3><form id="calculator-email-form" class="space-y-3"><input type="email" placeholder="Your email" required class="w-full border rounded-lg px-4 py-2"><button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">Send Me the Checklist</button></form><p class="text-xs text-gray-400 mt-2">Free PDF with gear checklist + optimization tips</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="bg-gray-900 text-gray-300 py-12 mt-12"><div class="max-w-7xl mx-auto px-4 text-center"><p>&copy; 2026 TrailReady Gear</p></div></footer>
+    <script src="/js/calculator.js"></script>
+    <script src="/js/email-capture.js"></script>
+</body>
+</html>
